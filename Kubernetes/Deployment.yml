@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <NAME>
+  labels:
+    app: <NAME>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <NAME>
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: <NAME>
+        common: commonservice
+    spec:
+      containers:
+      - name: <NAME>
+        image: <IMAGE>
+        ports:
+        - containerPort: <CONTAINER_PORT>
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 100m

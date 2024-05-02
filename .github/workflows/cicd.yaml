@@ -1,0 +1,59 @@
+name: Node.js CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+      - development
+      - staging
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+jobs:
+  check-pr-branches:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Check branch restrictions
+        run: |
+          base_branch="${{ github.event.pull_request.base.ref }}"
+          head_branch="${{ github.event.pull_request.head.ref }}"
+      
+          # Define allowed and restricted branch combinations
+          allowed_combinations=(
+            "development:staging"
+            "staging:main"
+            "development:development"
+          )
+      
+          restricted_combinations=(
+            "main:staging"
+            "main:development"
+            "staging:development"
+          )
+      
+          # Check if the branch combination is allowed or restricted
+          if [[ " ${allowed_combinations[*]} " != *" $head_branch:$base_branch "* ]]; then
+            if [[ " ${restricted_combinations[*]} " == *" $head_branch:$base_branch "* ]] || [[ "$base_branch" == "main" || "$base_branch" == "staging" ]]; then
+              echo "PR between restricted branches"
+              exit 1
+            fi
+          fi
+
+  # ci:
+  #   runs-on: ubuntu-latest
+  #   if: github.event.review.state == 'APPROVED'
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '20'
+
+  #     - name: Install dependencies
+  #       run: npm install
+
+
+ 

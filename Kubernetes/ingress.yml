@@ -1,0 +1,65 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: letsencrypt-cert
+spec:
+  secretName: tls-staging
+  issuerRef:
+    name: letsencrypt
+    kind: Issuer
+  dnsNames:
+    - "www.easylease.site"
+    - "easylease.site"
+    - "staging.easylease.site"
+    - "dev.easylease.site"
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    cert-manager.io/issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - "easylease.site"
+    - "www.easylease.site"
+    - "dev.easylease.site"
+    - "staging.easylease.site"
+    # - "domain-two.com"
+    # - "www.domain-two.com"
+    secretName: tls-staging
+  rules:
+    - host: "dev.easylease.site"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: development
+                port:
+                  number: 5000
+    - host: "staging.easylease.site"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: staging
+                port:
+                  number: 5001
+    - host: "easylease.site"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: main
+                port:
+                  number: 5002
+  
