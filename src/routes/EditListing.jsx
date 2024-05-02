@@ -27,7 +27,7 @@ const AddListing = () => {
 	const [geolocationEnabled, setGeolocationEnabled] = useState(true);
 	const [loading, setLoading] = useState(false);
 	const [listing, setListing] = useState(null);
-	const apiKey = import.meta.env.VITE_REACT_APP_API_KEY;
+	const apiKey = "AIzaSyDdgxq9eb1vL4oSGbNK8N1atu6bkg-qxUY";
 	const [formData, setFormData] = useState({
 		type: "rent",
 		name: "",

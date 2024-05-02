@@ -7,7 +7,7 @@ import Select from "react-select";
 import "react-datepicker/dist/react-datepicker.css";
 import Modal_card from './popModal';
 import { getAuth } from "firebase/auth";
-const apiKey = import.meta.env.VITE_REACT_APP_API_KEY;
+const apiKey = "AIzaSyDdgxq9eb1vL4oSGbNK8N1atu6bkg-qxUY";
 
 const ScheduleTour = () => {
     const { listingId } = useParams();

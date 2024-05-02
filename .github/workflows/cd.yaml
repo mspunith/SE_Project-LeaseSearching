@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Set up environment variables
+      - name: Env Variables Setup
         run: |
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           case "$BRANCH_NAME" in
@@ -45,23 +45,23 @@ jobs:
           
 
 
-      - name: Install doctl
+      - name: Doctl Installation
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       
-      - name: Build container image
+      - name: Conainer Build For code
         run: docker build --build-arg DEFAULT_PORT=$CONTAINER_PORT -t ${{ secrets.REGISTRY_NAME }}/${{ env.REPO_NAME }}:$(echo $GITHUB_SHA | head -c7) .
       
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+      - name: DigitalOcean Authentication
         run: doctl registry login --expiry-seconds 1200
       
-      - name: Push image to DigitalOcean Container Registry
+      - name: Push Images
         run: docker push ${{ secrets.REGISTRY_NAME }}/${{ env.REPO_NAME }}:$(echo $GITHUB_SHA | head -c7)
       
 
       
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
+      - name: Save k8's Clusetr 
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
       
       # - name: Ensure Kubernetes namespace
@@ -82,10 +82,10 @@ jobs:
           IMAGE_NAME="${{ secrets.REGISTRY_NAME }}/${{ env.REPO_NAME }}"
           sed -i "s|<IMAGE>|${IMAGE_NAME}:${TAG}|g; s|<CONTAINER_PORT>|${{ env.CONTAINER_PORT }}|g; s|<NAME>|${{ env.BRANCH_NAME }}|g" $GITHUB_WORKSPACE/Kubernetes/Deployment.yml
 
-      - name: Update service file
+      - name: Replace placeholders in Service YAML
         run: sed -i "s|<CONTAINER_PORT>|${{ env.CONTAINER_PORT }}|g; s|<NAME>|${{ env.BRANCH_NAME }}|g" $GITHUB_WORKSPACE/Kubernetes/Service.yml
         
-      - name: Deploy to LEASE_APPLICATION namespace
+      - name: Deploy to Default namespace
         run: |
           kubectl apply -f $GITHUB_WORKSPACE/Kubernetes/Deployment.yml 
           # if [ "${{ steps.service-check.outputs.exists }}" == "false" ]; then
