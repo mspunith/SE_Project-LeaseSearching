@@ -34,7 +34,7 @@ const LocationMarker = ({ onLocationSelected }) => {
 const AddListing = () => {
 	const navigate = useNavigate();
 	const auth = getAuth();
-	const apiKey = import.meta.env.VITE_REACT_APP_API_KEY;
+	const apiKey = "AIzaSyDdgxq9eb1vL4oSGbNK8N1atu6bkg-qxUY";
 	const [geolocationEnabled, setGeolocationEnabled] = useState(true);
 	const [loading, setLoading] = useState(false);
 	const [position, setPosition] = useState(null);
