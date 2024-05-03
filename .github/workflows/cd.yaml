@@ -67,14 +67,14 @@ jobs:
       # - name: Ensure Kubernetes namespace
       #   run: kubectl get namespace lease-application || kubectl create namespace lease-application
       
-      # - name: Check if Service Exists
-      #   id: service-check
-      #   run: |
-      #     if kubectl get svc ${{ env.BRANCH_NAME }}; then
-      #       echo "::set-output name=exists::true"
-      #     else
-      #       echo "::set-output name=exists::false"
-      #     fi
+      - name: Check if ingress Exists
+        id: service-check
+        run: |
+          if kubectl get ingress ingress; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
           
       - name: Replace placeholders in Deployment YAML
         run: |
@@ -90,6 +90,10 @@ jobs:
           kubectl apply -f $GITHUB_WORKSPACE/Kubernetes/Deployment.yml 
           # if [ "${{ steps.service-check.outputs.exists }}" == "false" ]; then
           kubectl apply -f $GITHUB_WORKSPACE/Kubernetes/Service.yml
+          # kubectl apply -f $GITHUB_WORKSPACE/Kubernetes/ingress.yml
           # fi
+      - name: Apply Ingress if it exists
+        if: steps.service-check.outputs.exists == 'false'
+        run: kubectl apply -f $GITHUB_WORKSPACE/Kubernetes/ingress.yml
 
 
