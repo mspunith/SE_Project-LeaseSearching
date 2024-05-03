@@ -69,7 +69,7 @@ const Navbar = () => {
 							} transition duration-500 ease-in-out`}
 							onClick={() => navigate("/")}
 						>
-							Home
+							Onboard
 						</li>
 						{console.log(darkMode)}
 						<li
